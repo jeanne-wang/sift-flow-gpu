@@ -46,7 +46,7 @@ sift_flow = SiftFlowTorch(
     fp16=True,
     return_numpy=False)
 imgs = [
-    cv2.imread('/projects/grail/xiaojwan/2k_players_mesh_rasterized/all_lbj_1/NBA2K19_2019.01.31_23.50.52_frame1001579.png'),
+    cv2.imread('/projects/grail/xiaojwan/nba2k_flow/2k_frames/NBA2K19_2019.01.31_23.50.52_frame1001579.png'),
     cv2.imread('/projects/grail/xiaojwan/2k_players_mesh_rasterized_noised_camera_sigma_5/all_lbj_1/NBA2K19_2019.01.31_23.50.52_frame1001579.png')
 ]
 imgs = [cv2.resize(im, (im.shape[1]//image_resize_factor, im.shape[0]//image_resize_factor)) for im in imgs]
@@ -74,4 +74,4 @@ flow = find_local_matches(descs[0:1], descs[1:2], 7)
 # Show optical flow
 flow = flow.permute(1, 2, 0).detach().cpu().numpy()
 flow_img = flowiz.convert_from_flow(flow)
-imsave('flow_rastered.png', flow_img)
+imsave('flow_frame.png', flow_img)
