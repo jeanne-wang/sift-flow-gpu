@@ -45,8 +45,8 @@ sift_flow = SiftFlowTorch(
     fp16=True,
     return_numpy=False)
 imgs = [
-    cv2.imread('mpi_sintel_images/frame_0001.png'),
-    cv2.imread('mpi_sintel_images/frame_0002.png')
+    cv2.imread('/projects/grail/xiaojwan/2k_players_mesh_rasterized/all_lbj_1/NBA2K19_2019.01.31_23.50.52_frame1001579.png'),
+    cv2.imread('/projects/grail/xiaojwan/2k_players_mesh_rasterized_noised_camera_sigma_5/all_lbj_1/NBA2K19_2019.01.31_23.50.52_frame1001579.png')
 ]
 imgs = [cv2.resize(im, (im.shape[1]//image_resize_factor, im.shape[0]//image_resize_factor)) for im in imgs]
 print('Warm-up step, will be slow on GPU')
