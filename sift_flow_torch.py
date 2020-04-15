@@ -69,6 +69,7 @@ class SiftFlowTorch(object):
                  is_boundary_included=True,
                  num_bins=8,
                  cuda=True,
+                 device = torch.device("cuda:0"),
                  fp16=False,
                  return_numpy=False):
         self.cell_size = cell_size
@@ -77,6 +78,7 @@ class SiftFlowTorch(object):
         self.num_bins = num_bins
         self.return_numpy = return_numpy
         self.cuda = cuda and torch.cuda.is_available()
+        self.device = device
         self.fp16 = fp16 and self.cuda
         if cuda and not torch.cuda.is_available():
             print('WARNING! CUDA mode requested, but',
@@ -136,7 +138,7 @@ class SiftFlowTorch(object):
         else:
             images = images.float()
         if self.cuda:
-            images = images.cuda()
+            images = images.to(self.device)
         images /= 255.0
 
         self.batch_size = images.shape[0]
@@ -154,7 +156,7 @@ class SiftFlowTorch(object):
             else:
                 self.grad_filter = self.grad_filter.float()
             if self.cuda:
-                self.grad_filter = self.grad_filter.cuda()
+                self.grad_filter = self.grad_filter.to(self.device)
         images_pad = F.pad(
             images, (1, 1, 1, 1), mode='replicate')
         dx = F.conv2d(images_pad, self.grad_filter)
@@ -174,7 +176,7 @@ class SiftFlowTorch(object):
             else:
                 self.imax_mag = self.imax_mag.float()
             if self.cuda:
-                self.imax_mag = self.imax_mag.cuda()
+                self.imax_mag = self.imax_mag.to(self.device)
         imax_mag = self.imax_mag[:self.batch_size]
         imax_mag[:] = 0
         imax_mag = imax_mag.scatter_(1, max_mag_idx, 1)
@@ -189,7 +191,7 @@ class SiftFlowTorch(object):
             else:
                 self.gradient = self.gradient.float()
             if self.cuda:
-                self.gradient = self.gradient.cuda()
+                self.gradient = self.gradient.to(self.device)
         gradient = self.gradient[:self.batch_size]
         gradient[:, 0] = (
             torch.sum(dx * imax_mag, dim=1) / (mag[:, 0] + self.epsilon))
@@ -205,7 +207,7 @@ class SiftFlowTorch(object):
             else:
                 idx = idx.float()
             if self.cuda:
-                idx = idx.cuda()
+                idx = idx.to(self.device)
             idx = idx.repeat(
                 self.max_batch_size, 1, images.shape[2], images.shape[3])
             self.sin_bins = torch.sin(idx * self.theta)
@@ -244,7 +246,7 @@ class SiftFlowTorch(object):
             else:
                 self.descs = self.descs.float()
             if self.cuda:
-                self.descs = self.descs.cuda()
+                self.descs = self.descs.to(self.device)
         descs = self.descs[:self.batch_size]
         for i in range(4):
             for j in range(4):
@@ -280,7 +282,7 @@ class SiftFlowTorch(object):
         else:
             filt = filt.float()
         if self.cuda:
-            filt = filt.cuda()
+            filt = filt.to(self.device)
         return filt
 
     def _compute_offsets(self,
@@ -302,7 +304,7 @@ class SiftFlowTorch(object):
             else:
                 grid = grid.float()
             if self.cuda:
-                grid = grid.cuda()
+                grid = grid.to(self.device)
             grid *= self.step_size
             self.offsets = torch.zeros(
                 self.max_batch_size, sift_height, sift_width, 32)
@@ -311,7 +313,7 @@ class SiftFlowTorch(object):
             else:
                 self.offsets = self.offsets.float()
             if self.cuda:
-                self.offsets = self.offsets.cuda()
+                self.offsets = self.offsets.to(self.device)
             for i in range(-1, 3):
                 for j in range(-1, 3):
                     off_y = y_shift + grid[:, :, :, 1] + i*self.cell_size

@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from sift_flow_torch import SiftFlowTorch
 from third_party.flowiz import flowiz
 from skimage.io import imread, imsave
-
+device = torch.device("cuda:1")
 def find_local_matches(desc1, desc2, kernel_size=9):
     # Computes the correlation between each pixel on desc1 with all neighbors
     # inside a window of size (kernel_size, kernel_size) on desc2. The match
@@ -42,11 +42,12 @@ sift_flow = SiftFlowTorch(
     is_boundary_included=True,
     num_bins=8,
     cuda=True,
+    device=device,
     fp16=True,
     return_numpy=False)
 imgs = [
-    cv2.imread('/projects/grail/xiaojwan/2k_players_mesh_rasterized/all_lbj_1/NBA2K19_2019.01.31_23.50.52_frame1001579.png'),
-    cv2.imread('/projects/grail/xiaojwan/2k_players_mesh_rasterized_noised_camera_sigma_5/all_lbj_1/NBA2K19_2019.01.31_23.50.52_frame1001579.png')
+    cv2.imread('mpi_sintel_images/frame_0001.png'),
+    cv2.imread('mpi_sintel_images/frame_0002.png')
 ]
 imgs = [cv2.resize(im, (im.shape[1]//image_resize_factor, im.shape[0]//image_resize_factor)) for im in imgs]
 print('Warm-up step, will be slow on GPU')
