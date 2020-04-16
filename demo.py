@@ -33,7 +33,7 @@ def find_local_matches(desc1, desc2, kernel_size=9):
 # If you run out or memory, try increasing the two variables below.
 # Running this example with sift_step_size=2, image_resize_factor=1, and fp16=True
 # requires a GPU with at least 8GB
-sift_step_size = 2
+sift_step_size = 1
 image_resize_factor = 1
 
 sift_flow = SiftFlowTorch(
@@ -47,7 +47,7 @@ sift_flow = SiftFlowTorch(
     return_numpy=False)
 imgs = [
     cv2.imread('/projects/grail/xiaojwan/nba2k_flow/2k_frames/NBA2K19_2019.01.31_23.50.52_frame1001579.png'),
-    cv2.imread('/projects/grail/xiaojwan/2k_players_mesh_rasterized_noised_camera_sigma_5/all_lbj_1/NBA2K19_2019.01.31_23.50.52_frame1001579.png')
+    cv2.imread('/projects/grail/xiaojwan/2k_players_mesh_rasterized_noised_camera_sigma_5/NBA2K19_2019.01.31_23.50.52_frame1001579.png')
 ]
 imgs = [cv2.resize(im, (im.shape[1]//image_resize_factor, im.shape[0]//image_resize_factor)) for im in imgs]
 print('Warm-up step, will be slow on GPU')
@@ -74,4 +74,4 @@ flow = find_local_matches(descs[0:1], descs[1:2], 7)
 # Show optical flow
 flow = flow.permute(1, 2, 0).detach().cpu().numpy()
 flow_img = flowiz.convert_from_flow(flow)
-imsave('flow_frame.png', flow_img)
+imsave('flow_players.png', flow_img)
